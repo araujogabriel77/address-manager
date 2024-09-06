@@ -21,7 +21,7 @@ export class UserModel extends EntityHelper{
   password: string;
 
   @OneToMany(() => AddressModel, (address) => address.user)
-  addressses: AddressModel[];
+  addresses: AddressModel[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt?: Date;

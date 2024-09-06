@@ -9,7 +9,7 @@ interface UserData {
 
 export interface UserRepositoryInterface extends RepositoryInterface<User> {
   create(data: UserData): Promise<User>;
-  update(id: number, data: UserData): Promise<User>;
+  update(id: number, data: Omit<UserData, 'password'>): Promise<User>;
   findOneByEmail(email: string): Promise<User>;
   emailAlreadyExists(currentUserId: number, email: string): Promise<boolean>;
 }

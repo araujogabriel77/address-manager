@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { User } from './entity/user';
 import { UserRepositoryInterface } from './repository/user-repository';
 import { UserRepository } from 'src/infra/repositories/user/user.repository';
+import { UpdateUserDto } from './dtos/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -31,7 +32,10 @@ export class UsersService {
     return await this.usersRepository.create(data);
   }
 
-  async update(id: number, data: CreateUserDto): Promise<User | void> {
+  async update(id: number, data: UpdateUserDto, currentUser: User): Promise<User> {
+    if(id !== currentUser.id) {
+      throw new UnauthorizedException('O ID informado não corresponde ao ID do usuário.');
+    }
     return await this.usersRepository.update(id, data);
   }
 

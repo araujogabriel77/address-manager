@@ -3,9 +3,10 @@ import { Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserModel } from './user.model';
 import { User } from '../../../domain/user/entity/user';
-import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { HttpException, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 
 export class UserRepository implements UserRepositoryInterface {
+  private logger = new Logger(this.constructor.name);
   constructor(
     @InjectRepository(UserModel)
     private readonly userRepository: Repository<User>,
@@ -15,6 +16,7 @@ export class UserRepository implements UserRepositoryInterface {
     try {
       return await this.userRepository.find();
     } catch (error) {
+      this.logger.error(error);
       throw new NotFoundException('Não foi possível encontrar os usuários.');
     }
   }
@@ -23,6 +25,7 @@ export class UserRepository implements UserRepositoryInterface {
     try {
       return await this.userRepository.findOneOrFail({ where: { id } });
     } catch (error) {
+      this.logger.error(error);
       throw new NotFoundException('Não foi possível encontrar o usuário com o id fornecido.');
     }
   }
@@ -31,6 +34,7 @@ export class UserRepository implements UserRepositoryInterface {
     try {
       return await this.userRepository.findOne({ where: { email } });
     } catch (error) {
+      this.logger.error(error);
       throw new NotFoundException('Não foi possível encontrar o usuário com o email fornecido.');
     }
   }
@@ -48,6 +52,7 @@ export class UserRepository implements UserRepositoryInterface {
 
       return !!user;
     } catch (error) {
+      this.logger.error(error);
       throw new NotFoundException('Não foi possível encontrar o usuário com o email fornecido.');
     }
   }
@@ -59,9 +64,7 @@ export class UserRepository implements UserRepositoryInterface {
       const model = this.userRepository.create(user)
       return await this.userRepository.save(model);
     } catch (error) {
-      if(!(error instanceof HttpException)) {
-        throw error;
-      }
+      this.logger.error(error);
       throw new InternalServerErrorException('Não foi possível criar o usuário.');
     }
   }
@@ -75,9 +78,7 @@ export class UserRepository implements UserRepositoryInterface {
 
       return await this.userRepository.save(user);
     } catch (error) {
-      if(!(error instanceof HttpException)) {
-        throw error;
-      }
+      this.logger.error(error);
       throw new InternalServerErrorException('Não foi possível atualizar o usuário.');
     }
   }
@@ -86,9 +87,7 @@ export class UserRepository implements UserRepositoryInterface {
     try {
       await this.userRepository.delete({ id });
     } catch (error) {
-      if(!(error instanceof HttpException)) {
-        throw error;
-      }
+      this.logger.error(error);
       throw new InternalServerErrorException('Não foi possível remover o usuário.');
     }
   }

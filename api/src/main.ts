@@ -3,12 +3,13 @@ import { AppModule } from './app.module';
 import * as compression from 'compression';
 import helmet from 'helmet';
 import {json, urlencoded } from 'express';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from './infra/config/config.type';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useLogger(new Logger());
   const configService = app.get(ConfigService<AllConfigType>);
 
   app.enableCors();

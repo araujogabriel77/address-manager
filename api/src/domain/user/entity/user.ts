@@ -1,5 +1,5 @@
 
-import { Address } from '../../address/entity/adress';
+import { Address } from '../../address/entity/address';
 import { genSalt , hash, compare } from 'bcryptjs';
 
 export class User {
