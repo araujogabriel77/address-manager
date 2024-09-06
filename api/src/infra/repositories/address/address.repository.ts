@@ -1,5 +1,5 @@
 import { AddressRepositoryInterface } from 'src/domain/address/repository/address-repository';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Address } from 'src/domain/address/entity/adress';
