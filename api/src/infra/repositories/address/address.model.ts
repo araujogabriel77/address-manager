@@ -1,8 +1,8 @@
 import { EntityHelper } from "src/utils/entity-helper";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { UserModel } from "../user/user.model";
 
-@Entity({ name: 'adresses' })
+@Entity({ name: 'addresses' })
 export class AddressModel extends EntityHelper {
   @PrimaryGeneratedColumn({ type: 'int'})
   id: number;
@@ -28,10 +28,11 @@ export class AddressModel extends EntityHelper {
   @Column({ type: String})
   uf: string;
 
-  @Column({ name: 'user_id'})
+  @Column({ name: 'user_id', type: 'int' })
   userId: number;
 
-  @ManyToOne(() => UserModel, (user) => user.addressses)
+  @ManyToOne(() => UserModel, (user) => user.addresses)
+  @JoinColumn({ name: 'user_id' })
   user: UserModel;
 
   @CreateDateColumn({ name: 'created_at' })

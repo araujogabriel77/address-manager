@@ -1,20 +1,27 @@
 import { AddressRepositoryInterface } from 'src/domain/address/repository/address-repository';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Address } from 'src/domain/address/entity/adress';
+import { HttpException, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { Address } from 'src/domain/address/entity/address';
 import { AddressModel } from './address.model';
 
 export class AddressRepository implements AddressRepositoryInterface {
+  private logger = new Logger(this.constructor.name);
   constructor(
     @InjectRepository(AddressModel)
     private readonly addressRepository: Repository<Address>,
+
   ) {}
 
-  async findAll(): Promise<Address[]> {
+  async findAll(userId: number): Promise<Address[]> {
     try {
-      return await this.addressRepository.find();
+      return await this.addressRepository.find({
+        where: {
+          userId,
+        }
+      });
     } catch (error) {
+      this.logger.error(error);
       throw new NotFoundException('Não foi possível encontrar os endereços.');
     }
   }
@@ -51,9 +58,7 @@ export class AddressRepository implements AddressRepositoryInterface {
       const model = this.addressRepository.create(address)
       return await this.addressRepository.save(model);
     } catch (error) {
-      if(!(error instanceof HttpException)) {
-        throw error;
-      }
+      this.logger.error(error);
       throw new InternalServerErrorException('Não foi possível criar o endereço.');
     }
   }
@@ -67,9 +72,7 @@ export class AddressRepository implements AddressRepositoryInterface {
 
       return await this.addressRepository.save(address);
     } catch (error) {
-      if(!(error instanceof HttpException)) {
-        throw error;
-      }
+      this.logger.error(error);
       throw new InternalServerErrorException('Não foi possível atualizar o endereço.');
     }
   }
@@ -78,9 +81,7 @@ export class AddressRepository implements AddressRepositoryInterface {
     try {
       await this.addressRepository.delete({ id });
     } catch (error) {
-      if(!(error instanceof HttpException)) {
-        throw error;
-      }
+      this.logger.error(error);
       throw new InternalServerErrorException('Não foi possível remover o endereço.');
     }
   }

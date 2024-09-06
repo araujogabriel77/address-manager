@@ -23,7 +23,7 @@ export class AuthenticationService {
         throw new UnauthorizedException('As credenciais estão incorretas.');
       }
 
-      const payload = { sub: user.id, username: user.name };
+      const payload = { id: user.id, name: user.name, email: user.email };
       return {
         accessToken: await this.jwtService.signAsync(payload, {
           secret: process.env.JWT_SECRET,

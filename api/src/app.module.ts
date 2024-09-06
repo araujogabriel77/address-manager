@@ -7,8 +7,10 @@ import { TypeOrmConfigService } from './infra/database/typeorm-config.service';
 import appConfig from './infra/config/app.config';
 import databaseConfig from './infra/config/database.config';
 import { UsersModule } from './domain/user/users.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AuthenticationModule } from './domain/authentication/authentication.module';
+import { AllExceptionsFilter } from './infra/filters/all-exception.filter';
+import { AddressModule } from './domain/address/address.module';
 
 @Module({
   imports: [
@@ -29,13 +31,18 @@ import { AuthenticationModule } from './domain/authentication/authentication.mod
     }]),
     AuthenticationModule,
     UsersModule,
+    AddressModule,
   ],
   controllers: [],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+  {
+    provide: APP_GUARD,
+    useClass: ThrottlerGuard,
+  },
+  {
+    provide: APP_FILTER,
+    useClass: AllExceptionsFilter,
+  },
 ],
 })
 export class AppModule {}
