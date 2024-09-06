@@ -55,8 +55,8 @@ export class UserRepository implements UserRepositoryInterface {
   async create(data: User): Promise<User> {
     try {
       const user = new User(data.name, data.email, data.password);
-      const model = this.userRepository.create(user)
       await user.hashPassword();
+      const model = this.userRepository.create(user)
       return await this.userRepository.save(model);
     } catch (error) {
       if(!(error instanceof HttpException)) {

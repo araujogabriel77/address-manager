@@ -8,6 +8,7 @@ import appConfig from './infra/config/app.config';
 import databaseConfig from './infra/config/database.config';
 import { UsersModule } from './domain/user/users.module';
 import { APP_GUARD } from '@nestjs/core';
+import { AuthenticationModule } from './domain/authentication/authentication.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { APP_GUARD } from '@nestjs/core';
       ttl: 60000,
       limit: 40,
     }]),
+    AuthenticationModule,
     UsersModule,
   ],
   controllers: [],
