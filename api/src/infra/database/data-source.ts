@@ -21,7 +21,7 @@ export const ormOptions = {
   dropSchema: false,
   keepConnectionAlive: true,
   logging: process.env.NODE_ENV !== 'production',
-  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  entities: [__dirname + '/../**/*.model{.ts,.js}'],
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   connection: {
     options: `project=${process.env.ENDPOINT_ID}`,

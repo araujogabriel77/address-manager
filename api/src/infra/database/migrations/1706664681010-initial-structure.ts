@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class InitialStructure1706664681010 implements MigrationInterface {
   private readonly initialStructure = `
   CREATE TABLE "users" (
-  "id" int PRIMARY KEY NOT NULL,
+  "id" SERIAL PRIMARY KEY,
   "name" varchar NOT NULL,
   "email" varchar UNIQUE NOT NULL,
   "password" varchar NOT NULL,
@@ -13,14 +13,14 @@ export class InitialStructure1706664681010 implements MigrationInterface {
 );
 
 CREATE TABLE "addresses" (
-  "id" smallint PRIMARY KEY NOT NULL,
-  "cep" varchar(8) NOT NULL,
-  "logradouro" varchar NOT NULL,
-  "complemento" varchar,
-  "bairro" varchar NOT NULL,
-  "cidade" varchar NOT NULL,
+  "id" SERIAL PRIMARY KEY,
+  "zip_code" varchar(8) NOT NULL,
+  "street" varchar NOT NULL,
+  "complement" varchar,
+  "neighborhood" varchar NOT NULL,
+  "city" varchar NOT NULL,
   "uf" varchar(2) NOT NULL,
-  "numero" varchar NOT NULL,
+  "number" varchar NOT NULL,
   "user_id" int NOT NULL,
   "created_at" timestamp DEFAULT 'now',
   "updated_at" timestamp DEFAULT 'now',
@@ -33,7 +33,7 @@ CREATE UNIQUE INDEX "users_email_idx" ON "users" ("email");
 
 CREATE UNIQUE INDEX "addresses_id_idx" ON "addresses" ("id");
 
-ALTER TABLE "addresses" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "addresses" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 `;
 
   public async up(queryRunner: QueryRunner): Promise<void> {
