@@ -1,7 +1,7 @@
 import { AddressRepositoryInterface } from 'src/domain/address/repository/address-repository';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HttpException, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { Address } from 'src/domain/address/entity/address';
 import { AddressModel } from './address.model';
 
@@ -10,7 +10,6 @@ export class AddressRepository implements AddressRepositoryInterface {
   constructor(
     @InjectRepository(AddressModel)
     private readonly addressRepository: Repository<Address>,
-
   ) {}
 
   async findAll(userId: number): Promise<Address[]> {
@@ -18,7 +17,7 @@ export class AddressRepository implements AddressRepositoryInterface {
       return await this.addressRepository.find({
         where: {
           userId,
-        }
+        },
       });
     } catch (error) {
       this.logger.error(error);
@@ -30,21 +29,14 @@ export class AddressRepository implements AddressRepositoryInterface {
     try {
       return await this.addressRepository.findOneOrFail({ where: { id } });
     } catch (error) {
+      this.logger.error(error);
       throw new NotFoundException('Não foi possível encontrar o endereço com o id fornecido.');
     }
   }
 
   async create(data: Address, userId: number): Promise<Address> {
     try {
-      const {
-        zipCode,
-        city,
-        complement,
-        neighborhood,
-        number,
-        street,
-        uf
-      } = data;
+      const { zipCode, city, complement, neighborhood, number, street, uf } = data;
       const address = new Address(
         zipCode,
         city,
@@ -53,9 +45,9 @@ export class AddressRepository implements AddressRepositoryInterface {
         number,
         street,
         uf,
-        userId
+        userId,
       );
-      const model = this.addressRepository.create(address)
+      const model = this.addressRepository.create(address);
       return await this.addressRepository.save(model);
     } catch (error) {
       this.logger.error(error);

@@ -1,6 +1,10 @@
 import { OnModuleInit } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
+import {
+  ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+} from 'class-validator';
 import { UsersService } from '../users.service';
 
 let service: UsersService;

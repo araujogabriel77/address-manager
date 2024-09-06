@@ -1,10 +1,4 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
 @Catch()
@@ -22,7 +16,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     let message = 'Internal Server Error';
 
-    if(exception instanceof HttpException) {
+    if (exception instanceof HttpException) {
       httpStatus = exception.getStatus();
       message = (exception.getResponse() as any).message;
     }

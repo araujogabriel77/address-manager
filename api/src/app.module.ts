@@ -25,24 +25,26 @@ import { AddressModule } from './domain/address/address.module';
         return new DataSource(options).initialize();
       },
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 40,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 40,
+      },
+    ]),
     AuthenticationModule,
     UsersModule,
     AddressModule,
   ],
   controllers: [],
   providers: [
-  {
-    provide: APP_GUARD,
-    useClass: ThrottlerGuard,
-  },
-  {
-    provide: APP_FILTER,
-    useClass: AllExceptionsFilter,
-  },
-],
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule {}

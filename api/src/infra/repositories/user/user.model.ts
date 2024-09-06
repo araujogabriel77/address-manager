@@ -1,13 +1,19 @@
-import { Exclude } from "class-transformer";
-import { EntityHelper } from "src/utils/entity-helper";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { genSalt , hash, compare } from 'bcryptjs';
-import { AddressModel } from "../address/address.model";
-
+import { Exclude } from 'class-transformer';
+import { EntityHelper } from 'src/utils/entity-helper';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { AddressModel } from '../address/address.model';
 
 @Entity({ name: 'users' })
-export class UserModel extends EntityHelper{
-  @PrimaryGeneratedColumn({ type: 'int'})
+export class UserModel extends EntityHelper {
+  @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
   @Column({ type: String })

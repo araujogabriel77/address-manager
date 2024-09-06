@@ -33,7 +33,7 @@ export class UsersService {
   }
 
   async update(id: number, data: UpdateUserDto, currentUser: User): Promise<User> {
-    if(id !== currentUser.id) {
+    if (id !== currentUser.id) {
       throw new UnauthorizedException('O ID informado não corresponde ao ID do usuário.');
     }
     return await this.usersRepository.update(id, data);

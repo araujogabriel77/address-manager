@@ -12,8 +12,7 @@ export class UsersController {
   constructor(private readonly service: UsersService) {}
 
   @Get()
-  async findAll(
-  ): Promise<User[]> {
+  async findAll(): Promise<User[]> {
     return await this.service.findAll();
   }
 

@@ -7,11 +7,7 @@ export class UsersSeed implements Seeder {
   public async run(dataSource: DataSource): Promise<any> {
     const repository = dataSource.getRepository(UserModel);
 
-    const userData = new User(
-    'Jon Doe',
-    'jondoe@gmail.com',
-    'JonDoe1885#$@'
-    );
+    const userData = new User('Jon Doe', 'jondoe@gmail.com', 'JonDoe1885#$@');
     await userData.hashPassword();
 
     const user = repository.create(userData);

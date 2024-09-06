@@ -1,31 +1,40 @@
-import { EntityHelper } from "src/utils/entity-helper";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { UserModel } from "../user/user.model";
+import { EntityHelper } from 'src/utils/entity-helper';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { UserModel } from '../user/user.model';
 
 @Entity({ name: 'addresses' })
 export class AddressModel extends EntityHelper {
-  @PrimaryGeneratedColumn({ type: 'int'})
+  @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
   @Column({ name: 'zip_code', type: String })
   zipCode: string;
 
-  @Column({ type: String})
+  @Column({ type: String })
   street: string;
 
   @Column({ type: String, nullable: true })
   complement?: string;
 
-  @Column({ type: String})
+  @Column({ type: String })
   neighborhood: string;
 
-  @Column({ type: String})
+  @Column({ type: String })
   number: string;
 
-  @Column({ type: String})
+  @Column({ type: String })
   city: string;
 
-  @Column({ type: String})
+  @Column({ type: String })
   uf: string;
 
   @Column({ name: 'user_id', type: 'int' })

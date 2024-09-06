@@ -13,7 +13,10 @@ export class UserIdExistPipe implements PipeTransform<any> {
     const user = await this.usersRepository.findOneById(id);
 
     if (!user) {
-      throw new NotFoundException('Usuário não encontrado', `Não foi possível encontrar um usuário com o ID: ${id}`);
+      throw new NotFoundException(
+        'Usuário não encontrado',
+        `Não foi possível encontrar um usuário com o ID: ${id}`,
+      );
     }
 
     return id;

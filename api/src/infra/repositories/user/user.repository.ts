@@ -3,7 +3,7 @@ import { Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserModel } from './user.model';
 import { User } from '../../../domain/user/entity/user';
-import { HttpException, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 
 export class UserRepository implements UserRepositoryInterface {
   private logger = new Logger(this.constructor.name);
@@ -41,11 +41,11 @@ export class UserRepository implements UserRepositoryInterface {
 
   async emailAlreadyExists(currentUserId: number, email: string): Promise<boolean> {
     try {
-      let id = currentUserId || 0;
+      const id = currentUserId || 0;
       const user = await this.userRepository.findOne({
         where: {
           email,
-          id: Not(id)
+          id: Not(id),
         },
         select: ['email'],
       });
@@ -61,7 +61,7 @@ export class UserRepository implements UserRepositoryInterface {
     try {
       const user = new User(data.name, data.email, data.password);
       await user.hashPassword();
-      const model = this.userRepository.create(user)
+      const model = this.userRepository.create(user);
       return await this.userRepository.save(model);
     } catch (error) {
       this.logger.error(error);

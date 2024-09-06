@@ -1,5 +1,5 @@
-import RepositoryInterface from "src/shared/repository/repository.interface";
-import { User } from "../entity/user";
+import RepositoryInterface from 'src/shared/repository/repository.interface';
+import { User } from '../entity/user';
 
 interface UserData {
   name: string;

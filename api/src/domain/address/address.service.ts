@@ -26,7 +26,7 @@ export class AddressService {
   async update(id: number, data: CreateAddressDto, userId: number): Promise<Address> {
     const address = await this.addressesRepository.findOneById(id);
 
-    if(address.userId !== userId) {
+    if (address.userId !== userId) {
       throw new UnauthorizedException('Você não tem permissão para alterar este endereço.');
     }
 

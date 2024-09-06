@@ -1,6 +1,5 @@
-
 import { Address } from '../../address/entity/address';
-import { genSalt , hash, compare } from 'bcryptjs';
+import { genSalt, hash, compare } from 'bcryptjs';
 
 export class User {
   private _id: number;
@@ -38,13 +37,13 @@ export class User {
 
   validate(): void {
     if (!this._name.length) {
-      throw new Error("Name is required");
+      throw new Error('Name is required');
     }
     if (!this.email.length) {
-      throw new Error("Email is required");
+      throw new Error('Email is required');
     }
     if (!this._password?.length) {
-      throw new Error("Password is required");
+      throw new Error('Password is required');
     }
   }
 

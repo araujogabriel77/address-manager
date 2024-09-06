@@ -13,9 +13,7 @@ export class AddressController {
   constructor(private readonly service: AddressService) {}
 
   @Get()
-  async findAll(
-    @CurrentUser() user: User
-  ): Promise<Address[]> {
+  async findAll(@CurrentUser() user: User): Promise<Address[]> {
     return await this.service.findAll(user.id);
   }
 
@@ -25,10 +23,7 @@ export class AddressController {
   }
 
   @Post()
-  async create(
-    @Body() data: CreateAddressDto,
-    @CurrentUser() user: User
-  ): Promise<Address> {
+  async create(@Body() data: CreateAddressDto, @CurrentUser() user: User): Promise<Address> {
     return await this.service.create(data, user.id);
   }
 
@@ -36,7 +31,7 @@ export class AddressController {
   async update(
     @Param('id', ParseIntPipe, AddressIdExistPipe) id: number,
     @Body() data: CreateAddressDto,
-    @CurrentUser() user: User
+    @CurrentUser() user: User,
   ): Promise<Address> {
     return await this.service.update(id, data, user.id);
   }
