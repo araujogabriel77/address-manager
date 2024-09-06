@@ -2,7 +2,8 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as compression from 'compression';
 import helmet from 'helmet';
-import { ClassSerializerInterceptor } from '@nestjs/common';
+import {json, urlencoded } from 'express';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from './infra/config/config.type';
 
@@ -16,6 +17,18 @@ async function bootstrap() {
     {
       exclude: ['/'],
     },
+  );
+
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ limit: '50mb', extended: true }));
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      forbidUnknownValues: false,
+      validationError: { target: false },
+      whitelist: true,
+    }),
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.use(compression());

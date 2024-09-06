@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSourceOptions, DataSource } from 'typeorm';
 import { TypeOrmConfigService } from './infra/database/typeorm-config.service';
 import appConfig from './infra/config/app.config';
 import databaseConfig from './infra/config/database.config';
+import { UsersModule } from './domain/user/users.module';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -24,8 +26,14 @@ import databaseConfig from './infra/config/database.config';
       ttl: 60000,
       limit: 40,
     }]),
+    UsersModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+],
 })
 export class AppModule {}
