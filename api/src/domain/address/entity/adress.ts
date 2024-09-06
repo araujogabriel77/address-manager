@@ -1,5 +1,5 @@
 export class Address {
-  private readonly _id: string;
+  private readonly _id: number;
   private readonly _zipCode: string;
   private readonly _street: string;
   private readonly _complement?: string;
@@ -7,6 +7,7 @@ export class Address {
   private readonly _number: string;
   private readonly _city: string;
   private readonly _uf: string;
+  private readonly _userId: number;
 
   constructor(
       zipCode: string,
@@ -15,7 +16,8 @@ export class Address {
       neighborhood: string,
       number: string,
       city: string,
-      uf: string
+      uf: string,
+      userId: number,
   ) {
       this._zipCode = zipCode;
       this._street = street;
@@ -24,9 +26,10 @@ export class Address {
       this._number = number;
       this._city = city;
       this._uf = uf;
+      this._userId = userId;
   }
 
-  public get id(): string {
+  public get id(): number {
       return this._id;
   }
 
@@ -56,6 +59,10 @@ export class Address {
 
   get uf(): string {
       return this._uf;
+  }
+
+  get userId(): number {
+      return this._userId;
   }
 
   public fullAddress(): string {
