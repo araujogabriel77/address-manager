@@ -22,7 +22,7 @@ export class UpdateUserDto {
 
   @Validate(UsersEmailAlreadyExist, {
     message:
-      'Usuário: Já existe um usuário registrado com o e-mail fornecido. Por favor altere o e-mail para realizar a operação.',
+      'Usuário: Já existe um usuário registrado com o e-mail fornecido.',
   })
   @IsString({ message: 'O e-mail precisa ser do tipo texto.' })
   @MinLength(6, { message: 'O e-mail precisa ter no mínimo 6 caracteres.' })
