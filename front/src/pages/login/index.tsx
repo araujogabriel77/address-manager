@@ -5,7 +5,8 @@ import { useNavigate } from "react-router";
 import { EyeSlashFilledIcon } from '../../icons/EyeSlashFilledIcon';
 import { EyeFilledIcon } from '../../icons/EyeFilledIcon';
 import Snackbar from '@mui/material/Snackbar';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { Alert } from '@mui/material';
 
 export default function Login() {
   const [isVisible, setIsVisible] = React.useState(false);
@@ -39,24 +40,33 @@ export default function Login() {
       });
   
       sessionStorage.setItem('accessToken', response.data?.accessToken);
-      navigate('/admin');
-    } catch (error) { 
-      setSnackMessage((error as any).response.data.message);
+      navigate('/home');
+    } catch (error) {
+      setSnackMessage((error as any)?.response?.data?.message || (error as AxiosError).message);
       setOpen(true);
     }
     
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[var(--bg-color-light)]">
+    <div className="flex items-center justify-center min-h-screen bg-[var(--bg-color-dark)]">
       <Snackbar
         open={open}
         autoHideDuration={5000}
         onClose={handleClose}
-        message={snackMessage}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         color='danger'
-      />
+      >
+        <Alert
+          onClose={handleClose}
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackMessage}
+        </Alert>
+      </Snackbar>
+    
       <Card className="w-96 p-6 shadow-lg">
         <CardBody>
           <h2 className="text-2xl font-bold mb-4">Login</h2>

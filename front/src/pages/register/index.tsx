@@ -4,7 +4,10 @@ import { config } from '../../config';
 import Snackbar from '@mui/material/Snackbar';
 import { EyeFilledIcon } from '../../icons/EyeFilledIcon';
 import { EyeSlashFilledIcon } from '../../icons/EyeSlashFilledIcon';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { Alert } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import './style.css';
 
 export default function Register() {
   const [passwordVisible, setPasswordVisible] = React.useState(false);
@@ -17,14 +20,21 @@ export default function Register() {
   const [snackMessage, setSnackMessage] = useState<string>('Erro ao fazer login');
   const [confirmPasswordMessage, setConfirmPasswordMessage] = useState<string>('Digite uma senha válida');
 
+  const navigate = useNavigate();
+  const successSnackMessage = 'Usuário criado com sucesso!';
   const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
   const toggleConfirmPasswordVisibility = () => setConfirmPasswordVisible(!confirmPasswordVisible);
 
   const validateEmail = (value: string) => value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i);
   const validatePassword = (value: string) => value.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{6,}$/);
 
+  const isInvalidName = React.useMemo(() => {
+    if (email?.length < 3) return false;
+
+  }, [name]);
+
   const isInvalidEmail = React.useMemo(() => {
-    if (email === "") return false;
+    if (!email?.length) return false;
 
     return validateEmail(email) ? false : true;
   }, [email]);
@@ -70,11 +80,14 @@ export default function Register() {
         },
       });
       if (response.status === 201) {
-        setSnackMessage('Usuário criado com sucesso!');
+        setSnackMessage(successSnackMessage);
         setOpen(true);
+        setTimeout(() => {
+          navigate('/')
+        }, 1000);
       }
     } catch (error) {
-      setSnackMessage((error as any).response.data.message);
+      setSnackMessage((error as any)?.response?.data?.message || (error as AxiosError).message);
       setOpen(true);
     }
     
@@ -86,9 +99,17 @@ export default function Register() {
         open={open}
         autoHideDuration={5000}
         onClose={handleClose}
-        message={snackMessage}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      />
+      >
+        <Alert
+          onClose={handleClose}
+          severity={snackMessage === successSnackMessage ? 'success' : 'error'}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackMessage}
+        </Alert>
+      </Snackbar>
       <Card className="w-96 p-6 shadow-lg">
         <CardBody>
           <h2 className="text-2xl font-bold mb-4">Cadastre-se</h2>
@@ -101,6 +122,9 @@ export default function Register() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 aria-label="Name"
+                errorMessage="O nome deve conter pelo menos 3 caracteres"
+                isInvalid={isInvalidName}
+                color={isInvalidName ? "danger" : "success"}
               />
             </div>
             <div className="mb-4">
@@ -161,7 +185,7 @@ export default function Register() {
                 type={confirmPasswordVisible ? "text" : "password"}
               />
             </div>
-            <Button type="submit" variant='shadow' color="primary">
+            <Button type="submit" variant='shadow' color="primary" disabled={isInvalidName || isInvalidEmail || isInvalidPassword || isInvalidConfirmPassword}>
               Cadastrar
             </Button>
           </form>
