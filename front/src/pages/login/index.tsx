@@ -18,7 +18,6 @@ export default function Login() {
   const navigate = useNavigate();
   const toggleVisibility = () => setIsVisible(!isVisible);
 
-
   const handleClose = () => {
     setOpen(false);
   };

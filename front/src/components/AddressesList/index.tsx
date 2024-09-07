@@ -4,18 +4,21 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Address, AddressFormData } from '../../types';
 import AddressUpdateFormModal from '../AddressUpdateFormModal';
+import ConfirmationModal from '../ConfirmationModal';
 
 
 interface AddressesListProps {
   addresses: Address[];
-  loading: boolean;
-  error: string | null;
   onAddressEdit: (formData: AddressFormData) => void;
+  onAddressDelete: (id: number) => void;
 }
 
-export default function AddressesList ({ addresses, loading, error, onAddressEdit }: AddressesListProps) {
+export default function AddressesList ({ addresses, onAddressEdit, onAddressDelete }: AddressesListProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState<number | null>(null);
+  
 
   const handleEditClick = (address: Address) => {
     setSelectedAddress(address);
@@ -31,9 +34,24 @@ export default function AddressesList ({ addresses, loading, error, onAddressEdi
     onAddressEdit(formData);
     handleCloseModal();
   };
+  
+  const handleDeleteClick = (id: number) => {
+    setAddressToDelete(id);
+    setConfirmDeleteVisible(true);
+  };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div style={{ color: 'red' }}>{error}</div>;
+  const handleConfirmDelete = () => {
+    if (addressToDelete !== null) {
+      onAddressDelete(addressToDelete);
+      setConfirmDeleteVisible(false);
+      setAddressToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmDeleteVisible(false);
+    setAddressToDelete(null);
+  };
 
   return (
     <Card>
@@ -44,6 +62,7 @@ export default function AddressesList ({ addresses, loading, error, onAddressEdi
             <TableColumn>Cep</TableColumn>
             <TableColumn>Logradouro</TableColumn>
             <TableColumn>Bairro</TableColumn>
+            <TableColumn>Nº</TableColumn>
             <TableColumn>Complemento</TableColumn>
             <TableColumn>Cidade</TableColumn>
             <TableColumn>UF</TableColumn>
@@ -56,14 +75,15 @@ export default function AddressesList ({ addresses, loading, error, onAddressEdi
                 <TableCell>{address.zipCode}</TableCell>
                 <TableCell>{address.street}</TableCell>
                 <TableCell>{address.neighborhood}</TableCell>
-                <TableCell>{address.complement}</TableCell>
+                <TableCell>{address.number}</TableCell>
+                <TableCell>{address?.complement}</TableCell>
                 <TableCell>{address.city}</TableCell>
                 <TableCell>{address.uf}</TableCell>
                 <TableCell>
                   <Button color="primary" size="sm" className="m-2" onClick={() => handleEditClick(address)}>
                     <EditIcon fontSize="small" />
                   </Button>
-                  <Button color="danger" size="sm" className="m-2">
+                  <Button color="danger" size="sm" className="m-2" onClick={() => handleDeleteClick(address.id)}>
                     <DeleteIcon fontSize="small" />
                   </Button>
                 </TableCell>
@@ -80,6 +100,13 @@ export default function AddressesList ({ addresses, loading, error, onAddressEdi
           address={selectedAddress}
         />
       )}
+      <ConfirmationModal
+        visible={confirmDeleteVisible}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Confirmar Exclusão"
+        message="Você tem certeza que deseja excluir este endereço?"
+      />
     </Card>
   );
 };

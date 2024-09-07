@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button, ModalContent } from '@nextui-org/react';
 import axios from 'axios';
 import { Address, AddressFormData } from '../../types';
+import { Snackbar, Alert } from '@mui/material';
 
 interface AddressUpdateFormModalProps {
   visible: boolean;
@@ -11,6 +12,8 @@ interface AddressUpdateFormModalProps {
 }
 
 export default function AddressUpdateFormModal({ visible, onClose, onSubmit, address }: AddressUpdateFormModalProps) {
+  const [errorSnackbarOpen, setErrorSnackbarOpen] = useState<boolean>(false);
+  const [errorSnackMessage, setErrorSnackMessage] = useState<string>('Não foi possível concluir a operação.');
   const [formData, setFormData] = useState<AddressFormData>({
     id: address?.id,
     zipCode: '',
@@ -21,6 +24,10 @@ export default function AddressUpdateFormModal({ visible, onClose, onSubmit, add
     city: '',
     uf: '',
   });
+
+  const handleCloseErrorSnackbar = () => {
+    setErrorSnackbarOpen(false);
+  };
 
   useEffect(() => {
     if (address) {
@@ -48,6 +55,8 @@ export default function AddressUpdateFormModal({ visible, onClose, onSubmit, add
       const url = `https://viacep.com.br/ws/${value}/json/`;
       try {
         const response = await axios.get(url);
+        if(response.data.erro) throw new Error('CEP não encontrado');
+
         setFormData((prev) => ({
           ...prev,
           street: response.data.logradouro || prev.street,
@@ -55,8 +64,9 @@ export default function AddressUpdateFormModal({ visible, onClose, onSubmit, add
           city: response.data.localidade || prev.city,
           uf: response.data.uf || prev.uf,
         }));
-      } catch (error) {
-        console.log(error);
+      } catch (error: any) {
+        setErrorSnackMessage(error.message);
+        setErrorSnackbarOpen(true);
       }
     }
   };
@@ -67,7 +77,25 @@ export default function AddressUpdateFormModal({ visible, onClose, onSubmit, add
   };
 
   return (
-    <Modal
+    <>
+      <Snackbar
+        open={errorSnackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseErrorSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        color='danger'
+      >
+        <Alert
+          onClose={handleCloseErrorSnackbar}
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {errorSnackMessage}
+        </Alert>
+      </Snackbar>
+
+      <Modal
       backdrop="blur"
       isOpen={visible}
       onClose={onClose}
@@ -150,5 +178,7 @@ export default function AddressUpdateFormModal({ visible, onClose, onSubmit, add
         </ModalFooter>
       </ModalContent>
     </Modal>
+    </>
+    
   );
 }
