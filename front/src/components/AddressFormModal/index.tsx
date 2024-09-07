@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button, ModalContent } from '@nextui-org/react';
-import { AddressFormData } from '../../types';
+import { Address, AddressFormData } from '../../types';
+import axios from 'axios';
 
 interface AddressFormModalProps {
   visible: boolean;
@@ -20,32 +21,47 @@ export default function AddressFormModal({ visible, onClose, onSubmit }: Address
     uf: '',
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = async(e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+    
     if(name === 'zipCode' && value.length === 8) {
       const url = `https://viacep.com.br/ws/${value}/json/`;
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          setFormData((prev) => ({
-            ...prev,
-            street: data.logradouro,
-            neighborhood: data.bairro,
-            city: data.localidade,
-            uf: data.uf,
-          }));
-        });
+      try {
+        const response = await axios.get(url);
+        setFormData((prev) => ({
+          ...prev,
+          street: response.data.logradouro,
+          neighborhood: response.data.bairro,
+          city: response.data.localidade,
+          uf: response.data.uf,
+        }));
+      } catch (error) {
+        console.log(error);
+      }
     };
   };
 
   const handleSubmit = () => {
     onSubmit(formData);
+    clearFormData();
     onClose();
   };
+
+  const clearFormData = () => {
+    setFormData({
+      zipCode: '',
+      street: '',
+      complement: '',
+      neighborhood: '',
+      number: '',
+      city: '',
+      uf: '',
+    });
+  }
 
   return (
     <Modal
@@ -119,6 +135,9 @@ export default function AddressFormModal({ visible, onClose, onSubmit }: Address
         />
       </ModalBody>
       <ModalFooter>
+        <Button color="secondary" onClick={clearFormData}>
+          Limpar
+        </Button>
         <Button color="danger" onClick={onClose}>
           Fechar
         </Button>

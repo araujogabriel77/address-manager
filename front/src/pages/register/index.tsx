@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import { Input, Button, Card, CardBody, CardFooter, Spacer } from '@nextui-org/react';
-import { config } from '../../config';
+import { API_ENDPOINT } from '../../env';
 import Snackbar from '@mui/material/Snackbar';
 import { EyeFilledIcon } from '../../icons/EyeFilledIcon';
 import { EyeSlashFilledIcon } from '../../icons/EyeSlashFilledIcon';
@@ -66,7 +66,7 @@ export default function Register() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
 
-    const url = `${config.apiUrl}/users`;
+    const url = `${API_ENDPOINT}/users`;
     const body = JSON.stringify({
       name: name,
       email: email,

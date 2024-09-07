@@ -13,7 +13,8 @@ export type Address = {
   deletedAt?: string;
 }
 
-export type AddressFormData {
+export type AddressFormData = {
+  id?: number;
   zipCode: string;
   street: string;
   complement?: string;

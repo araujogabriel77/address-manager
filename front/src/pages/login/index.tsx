@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import { Input, Button, Card, CardBody, CardFooter, Spacer } from '@nextui-org/react';
-import { config } from '../../config';
+import { API_ENDPOINT } from '../../env';
 import { useNavigate } from "react-router";
 import { EyeSlashFilledIcon } from '../../icons/EyeSlashFilledIcon';
 import { EyeFilledIcon } from '../../icons/EyeFilledIcon';
@@ -26,7 +26,7 @@ export default function Login() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
 
-    const url = `${config.apiUrl}/authentication/login`;
+    const url = `${API_ENDPOINT}/authentication/login`;
     const body = JSON.stringify({ 
       email: email,
       password: password

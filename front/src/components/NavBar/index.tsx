@@ -7,7 +7,11 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { AddressFormData } from '../../types';
 import AddressFormModal from '../AddressFormModal';
 
-export default function NavBar() {
+interface NavBarProps {
+  onAddressSubmit: (formData: AddressFormData) => void;
+}
+
+export default function NavBar({ onAddressSubmit }: NavBarProps) {
   const [modalVisible, setModalVisible] = useState(false);
 
   const openModal = () => setModalVisible(true);
@@ -15,8 +19,9 @@ export default function NavBar() {
   
   const navigate = useNavigate();
 
-  const handleSubmit = (formData: AddressFormData) => {
-    console.log('Dados do Formulário:', formData);
+  const handleSubmit = async (formData: AddressFormData) => {
+    onAddressSubmit(formData);
+    closeModal();
   };
 
   const handleLogout = () => {

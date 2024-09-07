@@ -1,29 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, Button, Card, CardBody, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@nextui-org/react';
-import { useNavigate } from 'react-router-dom';
 import NavBar from '../../components/NavBar';
-import { Address } from '../../types';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Address, AddressFormData } from '../../types';
+import { API_ENDPOINT } from '../../env';
 import './styles.css';
+import AddressesList from '../../components/AddressesList';
 
 export default function Home() {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
         const isAuthenticated = sessionStorage.getItem('accessToken');
-        if (!isAuthenticated) {
-          navigate('/'); 
-          return;
-        }
+        if (!isAuthenticated) return;
 
-        const response = await axios.get<Address[]>('http://localhost:3000/api/address', {
+        const response = await axios.get<Address[]>(`${API_ENDPOINT}/address`, {
           headers: {
             'Authorization': `Bearer ${isAuthenticated}`
           }
@@ -37,51 +31,51 @@ export default function Home() {
     };
 
     fetchAddresses();
-  }, [navigate]);
+  }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div style={{ color: 'red' }}>{error}</div>;
+  const handleAddressSubmit = async (formData: AddressFormData) => {
+    const accessToken = sessionStorage.getItem('accessToken');
+    try {
+      const response = await axios.post(`${API_ENDPOINT}/address`, formData, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+      });
+      if (response.status === 201) {
+        setAddresses((prevAddresses) => [...prevAddresses, response.data]);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleAddressEdit = async (formData: AddressFormData) => {
+    const accessToken = sessionStorage.getItem('accessToken');
+    if(!accessToken || !formData.id) return;
+    try {
+      const response = await axios.put(`${API_ENDPOINT}/address/${formData.id}`, formData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+      });
+      if (response.status === 200) {
+        const index = addresses.findIndex((address) => address.id === formData.id);
+        addresses[index] = response.data;
+        setAddresses([...addresses]);
+        // setAddresses((prevAddresses) => [...prevAddresses, response.data]);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-      <Card >
-      <NavBar />
-        <CardBody>
-          <div>
-            <Table aria-label="Address List">
-              <TableHeader>
-                <TableColumn>ID</TableColumn>
-                <TableColumn>Cep</TableColumn>
-                <TableColumn>Logradouro</TableColumn>
-                <TableColumn>Bairro</TableColumn>
-                <TableColumn>Complemento</TableColumn>
-                <TableColumn>Cidade</TableColumn>
-                <TableColumn>UF</TableColumn>
-                <TableColumn>Ações</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {addresses.map((address) => (
-                  <TableRow key={address.id}>
-                    <TableCell>{address.id}</TableCell>
-                    <TableCell>{address.zipCode}</TableCell>
-                    <TableCell>{address.street}</TableCell>
-                    <TableCell>{address.neighborhood}</TableCell>
-                    <TableCell>{address.complement}</TableCell>
-                    <TableCell>{address.city}</TableCell>
-                    <TableCell>{address.uf}</TableCell>
-                    <TableCell>
-                      <Button color="primary" size="sm" className="m-2">
-                      <EditIcon fontSize="small" />
-                      </Button>
-                      <Button color="danger" size="sm" className="m-2">
-                        <DeleteIcon fontSize="small" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardBody>
-      </Card>
+      <>
+      <NavBar onAddressSubmit={handleAddressSubmit} />
+      <AddressesList addresses={addresses} loading={loading} error={error} onAddressEdit={handleAddressEdit} />
+      </>
   );
 };
