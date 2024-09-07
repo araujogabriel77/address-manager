@@ -2,7 +2,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as compression from 'compression';
 import helmet from 'helmet';
-import { json, urlencoded } from 'express';
+import * as express from 'express';
 import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from './infra/config/config.type';
@@ -17,8 +17,8 @@ async function bootstrap() {
     exclude: ['/'],
   });
 
-  app.use(json({ limit: '50mb' }));
-  app.use(urlencoded({ limit: '50mb', extended: true }));
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
   app.useGlobalPipes(
     new ValidationPipe({
