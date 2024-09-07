@@ -4,9 +4,14 @@ import { Table, Button, Card, CardBody, TableHeader, TableColumn, TableBody, Tab
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../../components/NavBar';
 import { Address } from '../../types';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import './styles.css';
 
 export default function Home() {
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,54 +30,58 @@ export default function Home() {
         });
         setAddresses(response.data);
       } catch (error: any) {
-        console.log(error.message || 'Error fetching addresses');
+        setError(error.message || 'Error fetching addresses');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchAddresses();
   }, [navigate]);
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
   return (
-    <>
-    <NavBar />
-      <Card>
+      <Card >
+      <NavBar />
         <CardBody>
-          <Table aria-label="Address List">
-            <TableHeader>
-              <TableColumn>ID</TableColumn>
-              <TableColumn>Cep</TableColumn>
-              <TableColumn>Logradouro</TableColumn>
-              <TableColumn>Bairro</TableColumn>
-              <TableColumn>Complemento</TableColumn>
-              <TableColumn>Cidade</TableColumn>
-              <TableColumn>UF</TableColumn>
-              <TableColumn className="mx-8">Ações</TableColumn>
-            </TableHeader>
-            <TableBody>
-              {addresses.map((address) => (
-                <TableRow key={address.id}>
-                  <TableCell>{address.id}</TableCell>
-                  <TableCell>{address.zipCode}</TableCell>
-                  <TableCell>{address.street}</TableCell>
-                  <TableCell>{address.neighborhood}</TableCell>
-                  <TableCell>{address?.complement}</TableCell>
-                  <TableCell>{address.city}</TableCell>
-                  <TableCell>{address.uf}</TableCell>
-                  <TableCell>
-                    <Button color="primary" className="mx-8">
-                      Editar
-                    </Button>
-                    <Button color="danger">
-                      Remover
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div>
+            <Table aria-label="Address List">
+              <TableHeader>
+                <TableColumn>ID</TableColumn>
+                <TableColumn>Cep</TableColumn>
+                <TableColumn>Logradouro</TableColumn>
+                <TableColumn>Bairro</TableColumn>
+                <TableColumn>Complemento</TableColumn>
+                <TableColumn>Cidade</TableColumn>
+                <TableColumn>UF</TableColumn>
+                <TableColumn>Ações</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {addresses.map((address) => (
+                  <TableRow key={address.id}>
+                    <TableCell>{address.id}</TableCell>
+                    <TableCell>{address.zipCode}</TableCell>
+                    <TableCell>{address.street}</TableCell>
+                    <TableCell>{address.neighborhood}</TableCell>
+                    <TableCell>{address.complement}</TableCell>
+                    <TableCell>{address.city}</TableCell>
+                    <TableCell>{address.uf}</TableCell>
+                    <TableCell>
+                      <Button color="primary" size="sm" className="m-2">
+                      <EditIcon fontSize="small" />
+                      </Button>
+                      <Button color="danger" size="sm" className="m-2">
+                        <DeleteIcon fontSize="small" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardBody>
       </Card>
-      </>
   );
 };

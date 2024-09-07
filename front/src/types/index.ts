@@ -12,3 +12,13 @@ export type Address = {
   updatedAt: string;
   deletedAt?: string;
 }
+
+export type AddressFormData {
+  zipCode: string;
+  street: string;
+  complement?: string;
+  neighborhood: string;
+  number: string;
+  city: string;
+  uf: string;
+}
