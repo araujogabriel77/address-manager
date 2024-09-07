@@ -9,9 +9,10 @@ import AddressFormModal from '../AddressFormModal';
 
 interface NavBarProps {
   onAddressSubmit: (formData: AddressFormData) => void;
+  onExport:() => void;
 }
 
-export default function NavBar({ onAddressSubmit }: NavBarProps) {
+export default function NavBar({ onAddressSubmit, onExport }: NavBarProps) {
   const [modalVisible, setModalVisible] = useState(false);
 
   const openModal = () => setModalVisible(true);
@@ -23,6 +24,10 @@ export default function NavBar({ onAddressSubmit }: NavBarProps) {
     onAddressSubmit(formData);
     closeModal();
   };
+
+  const handleExport = () => {
+    onExport();
+  }
 
   const handleLogout = () => {
     sessionStorage.removeItem('accessToken');
@@ -44,7 +49,7 @@ export default function NavBar({ onAddressSubmit }: NavBarProps) {
         <AddIcon fontSize="small"/>
         </Button>
 
-        <Button color="primary" size="sm">
+        <Button color="primary" size="sm" onClick={handleExport}>
           <span className='hidden sm:inline'>Exportar</span>
         <FileDownloadIcon fontSize="small"/>
         </Button>

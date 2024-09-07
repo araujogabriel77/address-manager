@@ -18,6 +18,22 @@ export default function Home() {
     return Boolean(sessionStorage.getItem('accessToken'));
   }
 
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        if (!isAuthenticated()) return;
+        const response = await axios.get<Address[]>(`${API_ENDPOINT}/address`, {
+          headers: getHeaders()
+        });
+        setAddresses(response.data);
+      } catch (error: any) {
+        showErrorSnackbar(error?.response?.data?.message || error.message);
+      }
+    };
+
+    fetchAddresses();
+  }, []);
+
   const handleCloseErrorSnackbar = () => {
     setErrorSnackbarOpen(false);
   };
@@ -43,22 +59,6 @@ export default function Home() {
       'Authorization': `Bearer ${accessToken}`
     };
   }
-
-  useEffect(() => {
-    const fetchAddresses = async () => {
-      try {
-        if (!isAuthenticated()) return;
-        const response = await axios.get<Address[]>(`${API_ENDPOINT}/address`, {
-          headers: getHeaders()
-        });
-        setAddresses(response.data);
-      } catch (error: any) {
-        showErrorSnackbar(error?.response?.data?.message || error.message);
-      }
-    };
-
-    fetchAddresses();
-  }, []);
 
   const handleAddressSubmit = async (formData: AddressFormData) => {
     try {
@@ -108,6 +108,33 @@ export default function Home() {
     }
   };
 
+  const exportData = async () => {
+    try {
+    const headers = ['ID', 'CEP', 'LOGRADOURO', 'COMPLEMENTO', 'BAIRRO', 'NÚMERO', 'CIDADE', 'UF'];
+    const csvRows = [];
+
+    csvRows.push(headers.join(','));
+  
+    addresses.forEach(address => {
+      const formattedAddress = `${address.id},${address.zipCode},${address.street},${address.complement},${address.neighborhood},${address.number},${address.city},${address.uf}`;
+      csvRows.push(formattedAddress);
+    });
+
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'addresses.csv';
+    link.click();
+
+    URL.revokeObjectURL(url);
+    } catch (error: any) {
+      showErrorSnackbar(error?.response?.data?.message || error.message);
+    }
+  }
+
   return (
       <>
       <Snackbar
@@ -143,7 +170,10 @@ export default function Home() {
           {successSnackMessage}
         </Alert>
       </Snackbar>
-      <NavBar onAddressSubmit={handleAddressSubmit} />
+      <NavBar
+        onAddressSubmit={handleAddressSubmit}
+        onExport={exportData}
+        />
       <AddressesList
         addresses={addresses}
         onAddressEdit={handleAddressEdit}
