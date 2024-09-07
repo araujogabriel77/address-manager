@@ -33,7 +33,12 @@ export class AddressService {
     return await this.addressesRepository.update(id, data);
   }
 
-  async delete(id: number): Promise<{ message: string }> {
+  async delete(id: number, userId: number): Promise<{ message: string }> {
+    const address = await this.addressesRepository.findOneById(id);
+
+    if (address.userId !== userId) {
+      throw new UnauthorizedException('Você não tem permissão para alterar este endereço.');
+    }
     await this.addressesRepository.delete(id);
     return { message: 'O endereço foi removido com sucesso.' };
   }

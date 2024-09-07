@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/shared/guards/authentication.guard';
 import { AddressService } from './address.service';
 import { CreateAddressDto } from './dtos/create-address.dto';
@@ -34,5 +34,13 @@ export class AddressController {
     @CurrentUser() user: User,
   ): Promise<Address> {
     return await this.service.update(id, data, user.id);
+  }
+
+  @Delete(':id')
+  async delete(
+    @Param('id', ParseIntPipe, AddressIdExistPipe) id: number,
+    @CurrentUser() user: User,
+  ): Promise<{message: string}> {
+    return await this.service.delete(id, user.id);
   }
 }
