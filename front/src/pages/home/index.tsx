@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import NavBar from '../../components/NavBar';
 import { Address, AddressFormData } from '../../types';
