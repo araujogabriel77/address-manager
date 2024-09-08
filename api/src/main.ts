@@ -6,6 +6,7 @@ import * as express from 'express';
 import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from './infra/config/config.type';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,9 +14,19 @@ async function bootstrap() {
   const configService = app.get(ConfigService<AllConfigType>);
 
   app.enableCors();
+
   app.setGlobalPrefix(configService.getOrThrow('app.apiPrefix', { infer: true }), {
     exclude: ['/'],
   });
+
+  const config = new DocumentBuilder()
+    .setTitle('Address Management API')
+    .setDescription('Api de gerenciamento de endereços')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
 
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ limit: '50mb', extended: true }));
