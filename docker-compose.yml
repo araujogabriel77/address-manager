@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:16.0-alpine
+    restart: always
+    container_name: postgres-address-manager-db
+    env_file:
+      - ".env"
+    ports:
+      - ${DATABASE_PORT}:5432
+    volumes:
+      - address-manager-db:/var/lib/postgresql/data
+      - .api/docker/postgres/docker-entrypoint-initdb:/docker-entrypoint-initdb.d/
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    networks:
+      - app-network
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile
+    container_name: address-manager-api
+    env_file:
+      - ".env"
+    environment:
+      DATABASE_HOST: db
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    volumes:
+      - ./api/src:/app/src
+    networks:
+      - app-network
+  front:
+    build:
+      context: front
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - ./front/src:/app/src
+    networks:
+      - app-network
+    depends_on:
+      - api
+
+volumes:
+  address-manager-db:
+
+networks:
+  app-network:
+    driver: bridge
